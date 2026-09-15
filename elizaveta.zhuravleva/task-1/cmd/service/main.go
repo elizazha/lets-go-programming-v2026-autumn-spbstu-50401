@@ -4,18 +4,38 @@ import "fmt"
 
 func main() {
 	var first, second int
-
+	var operation string
 	_, err := fmt.Scanln(&first)
-	if err != nil{
+	if err != nil {
 		fmt.Println("Invalid first operand")
 		return
 	}
 
 	_, err = fmt.Scanln(&second)
-	if err != nil{
+	if err != nil {
 		fmt.Println("Invalid second operand")
 		return
 	}
 
-	fmt.Println(first, second)
+	_, err = fmt.Scanln(&operation)
+	if err != nil {
+		fmt.Println("Invalid operation")
+		return
+	}
+
+	if operation == "+" {
+		fmt.Println(first + second)
+	} else if operation == "-" {
+		fmt.Println(first - second)
+	} else if operation == "*" {
+		fmt.Println(first * second)
+	} else if operation == "/" {
+		if second == 0 {
+			fmt.Println("Division by zero")
+			return
+		}
+		fmt.Println(first / second)
+	} else {
+		fmt.Println("Invalid operation")
+	}
 }
