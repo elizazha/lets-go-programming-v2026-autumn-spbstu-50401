@@ -23,19 +23,20 @@ func main() {
 		return
 	}
 
-	if operation == "+" {
+	switch operation {
+	case "+":
 		fmt.Println(first + second)
-	} else if operation == "-" {
+	case "-":
 		fmt.Println(first - second)
-	} else if operation == "*" {
+	case "*":
 		fmt.Println(first * second)
-	} else if operation == "/" {
+	case "/":
 		if second == 0 {
 			fmt.Println("Division by zero")
 			return
 		}
 		fmt.Println(first / second)
-	} else {
+	default:
 		fmt.Println("Invalid operation")
 	}
 }
