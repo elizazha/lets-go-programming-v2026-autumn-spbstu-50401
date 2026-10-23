@@ -22,7 +22,7 @@ func main() {
 		return
 	}
 
-	for i := 0; i < departmentCount; i++ {
+	for range departmentCount {
 		var employeeCount int
 
 		if _, err := fmt.Fscan(reader, &employeeCount); err != nil {
@@ -34,7 +34,7 @@ func main() {
 		minTemp := startMinTemp
 		maxTemp := startMaxTemp
 
-		for j := 0; j < employeeCount; j++ {
+		for range employeeCount {
 			var (
 				operation   string
 				temperature int
