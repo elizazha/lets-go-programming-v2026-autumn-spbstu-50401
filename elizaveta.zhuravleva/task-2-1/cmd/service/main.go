@@ -1,71 +1,71 @@
 package main
 
 import (
-  "bufio"
-  "fmt"
-  "os"
+	"bufio"
+	"fmt"
+	"os"
 )
 
 const (
-  startMinTemp = 15
-  startMaxTemp = 30
+	startMinTemp = 15
+	startMaxTemp = 30
 )
 
 func main() {
-  reader := bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(os.Stdin)
 
-  var departmentCount int
+	var departmentCount int
 
-  if _, err := fmt.Fscan(reader, &departmentCount); err != nil {
-    fmt.Println(err)
+	if _, err := fmt.Fscan(reader, &departmentCount); err != nil {
+		fmt.Println(err)
 
-    return
-  }
+		return
+	}
 
-  for i := 0; i < departmentCount; i++ {
-    var employeeCount int
+	for i := 0; i < departmentCount; i++ {
+		var employeeCount int
 
-    if _, err := fmt.Fscan(reader, &employeeCount); err != nil {
-      fmt.Println(err)
+		if _, err := fmt.Fscan(reader, &employeeCount); err != nil {
+			fmt.Println(err)
 
-      return
-    }
+			return
+		}
 
-    minTemp := startMinTemp
-    maxTemp := startMaxTemp
+		minTemp := startMinTemp
+		maxTemp := startMaxTemp
 
-    for j := 0; j < employeeCount; j++ {
-      var (
-        operation   string
-        temperature int
-      )
+		for j := 0; j < employeeCount; j++ {
+			var (
+				operation   string
+				temperature int
+			)
 
-      if _, err := fmt.Fscan(reader, &operation, &temperature); err != nil {
-        fmt.Println(err)
+			if _, err := fmt.Fscan(reader, &operation, &temperature); err != nil {
+				fmt.Println(err)
 
-        return
-      }
+				return
+			}
 
-      switch operation {
-      case ">=":
-        if temperature > minTemp {
-          minTemp = temperature
-        }
-      case "<=":
-        if temperature < maxTemp {
-          maxTemp = temperature
-        }
-      default:
-        fmt.Println("invalid sign:", operation)
+			switch operation {
+			case ">=":
+				if temperature > minTemp {
+					minTemp = temperature
+				}
+			case "<=":
+				if temperature < maxTemp {
+					maxTemp = temperature
+				}
+			default:
+				fmt.Println("invalid sign:", operation)
 
-        return
-      }
+				return
+			}
 
-      if minTemp > maxTemp {
-        fmt.Println(-1)
-      } else {
-        fmt.Println(minTemp)
-      }
-    }
-  }
+			if minTemp > maxTemp {
+				fmt.Println(-1)
+			} else {
+				fmt.Println(minTemp)
+			}
+		}
+	}
 }
