@@ -18,6 +18,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	directoryPermissions = 0o755
+	filePermissions      = 0o600
+)
+
+var (
+	errConfigPathRequired = errors.New("configuration path is required: use -config")
+	errInputFileRequired  = errors.New("input-file is required")
+	errOutputFileRequired = errors.New("output-file is required")
+	errUnsupportedCharset = errors.New("unsupported XML encoding")
+	errEmptyCharCode      = errors.New("currency character code is empty")
+)
+
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
@@ -71,7 +84,7 @@ func readConfig(path string) (Config, error) {
 	var config Config
 
 	if strings.TrimSpace(path) == "" {
-		return config, errors.New("configuration path is required: use -config")
+		return config, errConfigPathRequired
 	}
 
 	data, err := os.ReadFile(path)
@@ -84,11 +97,11 @@ func readConfig(path string) (Config, error) {
 	}
 
 	if strings.TrimSpace(config.InputFile) == "" {
-		return config, errors.New("input-file is required")
+		return config, errInputFileRequired
 	}
 
 	if strings.TrimSpace(config.OutputFile) == "" {
-		return config, errors.New("output-file is required")
+		return config, errOutputFileRequired
 	}
 
 	return config, nil
@@ -127,32 +140,32 @@ func charsetReader(charset string, input io.Reader) (io.Reader, error) {
 	case "windows-1251", "cp1251":
 		return charmap.Windows1251.NewDecoder().Reader(input), nil
 	default:
-		return nil, fmt.Errorf("unsupported XML encoding: %s", charset)
+		return nil, fmt.Errorf("%w: %s", errUnsupportedCharset, charset)
 	}
 }
 
 func convertCurrency(source XMLCurrency) (Currency, error) {
 	var currency Currency
 
-	numCode, err := strconv.Atoi(strings.TrimSpace(source.NumCode))
-	if err != nil {
-		return currency, fmt.Errorf("invalid currency code %q: %w", source.NumCode, err)
+	numCodeText := strings.TrimSpace(source.NumCode)
+	if numCodeText != "" {
+		numCode, err := strconv.Atoi(numCodeText)
+		if err != nil {
+			return currency, fmt.Errorf("invalid currency code %q: %w", source.NumCode, err)
+		}
+
+		currency.NumCode = numCode
 	}
 
-	charCode := strings.TrimSpace(source.CharCode)
-	if charCode == "" {
-		return currency, errors.New("currency character code is empty")
-	}
+	currency.CharCode = strings.TrimSpace(source.CharCode)
 
 	valueText := strings.ReplaceAll(strings.TrimSpace(source.Value), ",", ".")
 
 	value, err := strconv.ParseFloat(valueText, 64)
 	if err != nil {
-		return currency, fmt.Errorf("invalid value for %s: %w", charCode, err)
+		return currency, fmt.Errorf("invalid value for %s: %w", currency.CharCode, err)
 	}
 
-	currency.NumCode = numCode
-	currency.CharCode = charCode
 	currency.Value = value
 
 	return currency, nil
@@ -164,13 +177,13 @@ func writeCurrencies(path string, currencies []Currency) error {
 		return fmt.Errorf("encode JSON: %w", err)
 	}
 
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), directoryPermissions); err != nil {
 		return fmt.Errorf("create output directory: %w", err)
 	}
 
 	data = append(data, '\n')
 
-	if err := os.WriteFile(path, data, 0o600); err != nil {
+	if err := os.WriteFile(path, data, filePermissions); err != nil {
 		return fmt.Errorf("write JSON: %w", err)
 	}
 
