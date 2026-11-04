@@ -28,7 +28,6 @@ var (
 	errInputFileRequired  = errors.New("input-file is required")
 	errOutputFileRequired = errors.New("output-file is required")
 	errUnsupportedCharset = errors.New("unsupported XML encoding")
-	errEmptyCharCode      = errors.New("currency character code is empty")
 )
 
 type Config struct {
